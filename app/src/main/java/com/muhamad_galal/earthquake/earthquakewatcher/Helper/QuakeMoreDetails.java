@@ -1,8 +1,7 @@
-package com.muhamad_galal.earthquake.earthquakewatcher.Util;
+package com.muhamad_galal.earthquake.earthquakewatcher.Helper;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
@@ -30,7 +29,6 @@ public class QuakeMoreDetails {
     public QuakeMoreDetails(final Context context , String url , RequestQueue queue) {
         this.url = url;
         this.context = context;
-
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url
                 , new Response.Listener<JSONObject>() {
@@ -98,10 +96,8 @@ public class QuakeMoreDetails {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                //TODO ERROR LOGIC
-                Log.d("TAG " , error.getMessage());
-
+                //deal with Volley Error
+                new ErrorHandler(context, error);
             }
         });
         queue.add(jsonObjectRequest);

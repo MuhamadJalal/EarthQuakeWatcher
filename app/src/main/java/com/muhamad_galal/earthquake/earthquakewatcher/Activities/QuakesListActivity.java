@@ -1,13 +1,12 @@
 package com.muhamad_galal.earthquake.earthquakewatcher.Activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.muhamad_galal.earthquake.earthquakewatcher.Helper.ErrorHandler;
 import com.muhamad_galal.earthquake.earthquakewatcher.Model.EarthQuake;
 import com.muhamad_galal.earthquake.earthquakewatcher.R;
 import com.muhamad_galal.earthquake.earthquakewatcher.Util.Constants;
@@ -44,7 +44,6 @@ public class QuakesListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quakes_list);
 
-
         earthQuake = new EarthQuake();
         earthQuakeList = new ArrayList<>();
         arrayList = new ArrayList<>();
@@ -62,7 +61,6 @@ public class QuakesListActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
                         try {
                             JSONArray features = response.getJSONArray("features");
 
@@ -114,13 +112,10 @@ public class QuakesListActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                //TODO remove the unwanted
-                Toast.makeText(QuakesListActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//                recreate();
+                //deal with Volley Error
+                new ErrorHandler(QuakesListActivity.this, error);
             }
         });
-
         queue.add(jsonObjectRequest);
     }
 }

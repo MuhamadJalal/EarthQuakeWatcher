@@ -1,7 +1,6 @@
-package com.muhamad_galal.earthquake.earthquakewatcher.Util;
+package com.muhamad_galal.earthquake.earthquakewatcher.Helper;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,7 +27,6 @@ public class QuakeDetails {
                     public void onResponse(JSONObject response) {
 
                         String detailsURL = "";
-
                         try {
                             JSONObject properties = response.getJSONObject("properties");
                             JSONObject products = properties.getJSONObject("products");
@@ -40,7 +38,6 @@ public class QuakeDetails {
 
                                 detailsURL = geoURLJsonObj.getString("url");
                             }
-
                             new QuakeMoreDetails(context , detailsURL , queue);
 
                         } catch (JSONException e) {
@@ -51,10 +48,8 @@ public class QuakeDetails {
                 , new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                //TODO ERROR LOGIC
-                Toast.makeText(context, "getQuakeDetails Error \n " + error.getMessage(), Toast.LENGTH_LONG).show();
-
+                //deal with Volley Error
+                new ErrorHandler(context, error);
             }
         });
         queue.add(objectRequest);

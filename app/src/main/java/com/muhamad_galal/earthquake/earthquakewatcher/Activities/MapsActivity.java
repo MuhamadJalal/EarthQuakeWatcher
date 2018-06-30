@@ -9,10 +9,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
@@ -34,10 +34,12 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.muhamad_galal.earthquake.earthquakewatcher.Helper.ErrorHandler;
+import com.muhamad_galal.earthquake.earthquakewatcher.Helper.QuakeDetails;
 import com.muhamad_galal.earthquake.earthquakewatcher.Model.EarthQuake;
 import com.muhamad_galal.earthquake.earthquakewatcher.R;
+import com.muhamad_galal.earthquake.earthquakewatcher.UI.CustomViewInfoAdapter;
 import com.muhamad_galal.earthquake.earthquakewatcher.Util.Constants;
-import com.muhamad_galal.earthquake.earthquakewatcher.Util.QuakeDetails;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,7 +91,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE),
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
         };
-
         getEarthQuakes();
     }
 
@@ -161,16 +162,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                //TODO ERROR LOGIC
-                Toast.makeText(MapsActivity.this, "getEarthQuake Error \n " + error.getMessage(), Toast.LENGTH_LONG).show();
-                //handle the error
-//                    recreate();
+                //deal with Volley Error
+                new ErrorHandler(MapsActivity.this , error);
             }
         });
         queue.add(jsonObjectRequest);
     }
-
 
     /**
      * Manipulates the map once available.
@@ -184,13 +181,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-
         // bind Location with map
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
@@ -223,12 +213,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ActivityCompat.requestPermissions(this , new String[] {Manifest.permission.ACCESS_FINE_LOCATION} , 1);
             }else{
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                // TODO other logic putted here!
             }
         }
         else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
+
+        mMap.setInfoWindowAdapter(new CustomViewInfoAdapter(this));
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     // handle user response for Location permission
@@ -248,16 +240,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
-        new QuakeDetails(this , marker.getTag().toString() , queue);
-
+        new QuakeDetails(this , marker.getTag().toString(), queue);
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         return false;
     }
-
-
-
 }

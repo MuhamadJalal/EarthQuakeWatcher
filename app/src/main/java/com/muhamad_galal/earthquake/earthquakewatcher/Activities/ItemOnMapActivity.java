@@ -1,9 +1,8 @@
 package com.muhamad_galal.earthquake.earthquakewatcher.Activities;
 
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -16,10 +15,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.muhamad_galal.earthquake.earthquakewatcher.Helper.QuakeDetails;
 import com.muhamad_galal.earthquake.earthquakewatcher.Model.EarthQuake;
 import com.muhamad_galal.earthquake.earthquakewatcher.R;
 import com.muhamad_galal.earthquake.earthquakewatcher.UI.CustomViewInfoAdapter;
-import com.muhamad_galal.earthquake.earthquakewatcher.Util.QuakeDetails;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -47,7 +46,6 @@ public class ItemOnMapActivity extends FragmentActivity implements OnMapReadyCal
 
         queue = Volley.newRequestQueue(this);
     }
-
 
     /**
      * Manipulates the map once available.
@@ -91,7 +89,6 @@ public class ItemOnMapActivity extends FragmentActivity implements OnMapReadyCal
 
             mMap.addCircle(circleOptions);
         }
-
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(earthQuake.getLat() , earthQuake.getLon())));
         mMap.setInfoWindowAdapter(new CustomViewInfoAdapter(this));
         mMap.setOnInfoWindowClickListener(this);
@@ -99,11 +96,6 @@ public class ItemOnMapActivity extends FragmentActivity implements OnMapReadyCal
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
-        try{
-            new QuakeDetails(this , marker.getTag().toString() , queue);
-        }catch (NullPointerException n){
-            Log.d("TAG ER " , n.getMessage());
-        }
+        new QuakeDetails(this , marker.getTag().toString() , queue);
     }
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class EarthQuake implements Serializable {
 
-    private final static long serializable =10l;
+    private final static long serializable =10L;
     private String place;
     private double magnitude;
     private String detailLink;
