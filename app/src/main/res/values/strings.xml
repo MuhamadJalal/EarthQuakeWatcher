@@ -2,4 +2,13 @@
     <string name="app_name">EarthQuake Watcher</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_item_on_map">Map</string>
+    <string name="show_list">Show List</string>
+    <string name="magnitude">Magnitude</string>
+    <string name="more_info">More Info…</string>
+    <string name="more_information">More Information</string>
+    <string name="surrounding_city">Surrounding Cities</string>
+    <string name="lIST">LIST</string>
+    <string name="close">Close</string>
+    <string name="warning_sign">Warning</string>
+    <string name="text">text</string>
 </resources>
