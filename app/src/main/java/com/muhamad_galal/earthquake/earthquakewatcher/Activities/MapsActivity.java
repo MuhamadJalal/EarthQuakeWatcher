@@ -1,7 +1,6 @@
 package com.muhamad_galal.earthquake.earthquakewatcher.Activities;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -47,6 +46,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback ,GoogleMap.OnInfoWindowClickListener ,
         GoogleMap.OnMarkerClickListener{
@@ -55,10 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private LocationListener locationListener;
     private RequestQueue queue;
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
     private BitmapDescriptor[] colorDescriptor;
-    private Button showListBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        showListBtn = (Button) findViewById(R.id.showListBtn);
+        Button showListBtn = findViewById(R.id.showListBtn);
         showListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         final EarthQuake earthQuake = new EarthQuake();
 
+        // Establish a connection to the API
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constants.URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -108,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     JSONArray features = response.getJSONArray("features");
 
                     for (int i = 0 ; i < 200 ; i++){
+                        // invoke data fom the given URL
                         // get properties object
                         JSONObject properties = features.getJSONObject(i).getJSONObject("properties");
                         // get coordinates object
@@ -128,17 +127,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         earthQuake.setTime(properties.getLong("time"));
                         // formatting time
                         DateFormat dateFormat = DateFormat.getDateInstance();
-                        String formated = dateFormat.format(new Date(Long.valueOf(properties.getString("time"))).getTime());
+                        String formatted = dateFormat.format(new Date(Long.valueOf(properties.getString("time"))).getTime());
 
                         // setting up marker
                         MarkerOptions markerOptions = new MarkerOptions();
                         markerOptions.icon(colorDescriptor[Constants.randomColor(colorDescriptor.length , 0)]);
                         markerOptions.title(earthQuake.getPlace());
                         markerOptions.position(new LatLng(earthQuake.getLat() ,earthQuake.getLon()));
-                        markerOptions.snippet("Magnitude: " + earthQuake.getMagnitude() + "\n"+"Date: " + formated);
+                        markerOptions.snippet("Magnitude: " + earthQuake.getMagnitude() + "\n"+"Date: " + formatted);
 
                         Marker marker = mMap.addMarker(markerOptions);
+                        // set onClick focus on detailed link
                         marker.setTag(earthQuake.getDetailLink());
+                        // put zooming factory on map
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat , lon ) , 1));
 
                         // Adding circle to marker that magnitude > X
@@ -150,8 +151,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             circleOptions.strokeWidth(2.5f);
                             circleOptions.strokeColor(Color.MAGENTA);
                             circleOptions.fillColor(Color.RED);
+                            // adding circle to the Marker
                             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
+                            // adding circle to the Map
                             mMap.addCircle(circleOptions);
                         }
                     }
@@ -240,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        new QuakeDetails(this , marker.getTag().toString(), queue);
+        new QuakeDetails(this , Objects.requireNonNull(marker.getTag()).toString(), queue);
     }
 
     @Override
